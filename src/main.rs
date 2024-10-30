@@ -8,35 +8,51 @@ fn main() {
     let secret_num: u32 = rand::thread_rng().gen_range(1..101);
     println!("Your secret number is {}", secret_num);
 
+    let mut max_number: u32 = 100;
+    let mut min_number: u32 = 1;
     loop {
         println!("Please input your guess.");
-        let mut user_input = String::new();
+
+        let mut guess = String::new();
 
         io::stdin()
-            .read_line(&mut user_input)
+            .read_line(&mut guess)
             .expect("Failed to read input");
 
-        if user_input.trim() == "exit" {
+        if guess.trim() == "exit" {
             break;
         }
 
-        let user_input = match user_input.trim().parse() {
+        let guess_num: u32 = match guess
+            .trim()
+            .parse() {
             Ok(num) => num,
             Err(_) => continue,
         };
 
-        println!("Your guessed number is {}", user_input);
+        println!("Your guessed number is {}", guess_num);
 
-        match user_input.cpm(&secret_num) {
-            Ordering::Less => {
-                println!("Too small!")
-            }
-            Ordering::Greater => {
-                println!("Too big!")
-            }
+        match guess_num.cmp(&secret_num) {
             Ordering::Equal => {
                 println!("You win!");
+                println!("The secret number is {}", secret_num);
                 break;
+            }
+            Ordering::Greater => {
+                if guess_num <= max_number {
+                    max_number = guess_num
+                };
+
+                println!("Too big!");
+                println!("The secret number is between {} and {}", min_number, max_number);
+            }
+            Ordering::Less => {
+                if guess_num >= min_number {
+                    min_number = guess_num
+                };
+
+                println!("Too small!");
+                println!("The secret number is between {} and {}", min_number, max_number);
             }
         }
     }
